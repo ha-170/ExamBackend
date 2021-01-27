@@ -29,7 +29,28 @@ public class CourseFacadeTest {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         facade = CourseFacade.getCourseFacade(emf);
         EntityManager em = emf.createEntityManager();
+        c1 = new Course("security","beginner");
+        c2 = new Course("javascript","advanced");
+        try {
+            em.getTransaction().begin();
+            em.persist(c1);
+            em.persist(c2);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
 
+    @AfterAll
+    public static void tearDownClass() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("delete from Course").executeUpdate();
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
 
     @Test
@@ -59,4 +80,14 @@ public class CourseFacadeTest {
             assertEquals(400, ex.getErrorCode());
         }
     }
+
+    @Test
+    public void getAllCoursesFacade() throws API_Exception {
+        //Act
+        CourseDTO[] courses = facade.getAllCourses();
+
+        //Assert
+        assertEquals(2, courses.length);
+    }
+
 }

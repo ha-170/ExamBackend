@@ -11,6 +11,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path("course")
 public class CourseResource {
@@ -24,7 +25,6 @@ public class CourseResource {
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-
     public String addCourse(String courseJson) throws API_Exception {
         CourseDTO course = GSON.fromJson(courseJson, CourseDTO.class);
         CourseDTO newCourse;
@@ -34,6 +34,14 @@ public class CourseResource {
             throw ex;
         }
         return GSON.toJson(newCourse);
+    }
+
+    @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCourses() {
+        CourseDTO[] courses = FACADE.getAllCourses();
+        return GSON.toJson(courses);
     }
 
 }

@@ -132,4 +132,20 @@ public class CourseResourceTest {
                 .response();
         Assertions.assertEquals(400, response.statusCode());
     }
+
+    @Test
+    public void testGetAllCourses(){
+        performLogin("admin", "test1");
+        Response response = given()
+                .contentType("application/json")
+                .header("x-access-token", token)
+                .when()
+                .get("/course/all")
+                .then()
+                .extract()
+                .response();
+        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertEquals(2, response.jsonPath().getList("$").size());
+
+    }
 }

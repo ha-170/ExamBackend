@@ -6,6 +6,9 @@ import errorhandling.API_Exception;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.util.List;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 public class CourseFacade {
 
@@ -46,6 +49,22 @@ public class CourseFacade {
             em.close();
         }
         return new CourseDTO(course);
+    }
+
+    public CourseDTO[] getAllCourses() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Course> query = em.createQuery("SELECT c FROM Course c", Course.class);
+            List<Course> courses = query.getResultList();
+            CourseDTO[] courseArray = new CourseDTO[courses.size()];
+            for(int i = 0; i < courseArray.length; i++){
+                Course c = courses.get(i);
+                courseArray[i] = new CourseDTO(c);
+            }
+        return courseArray;
+        } finally {
+            em.close();
+        }
     }
 }
 
