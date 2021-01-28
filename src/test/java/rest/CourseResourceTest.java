@@ -70,6 +70,7 @@ public class CourseResourceTest {
             //Delete existing users and roles to get a "fresh" database
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
+            em.createQuery("delete from Class").executeUpdate();
             em.createQuery("delete from Course").executeUpdate();
             u1 = new User("admin","test1");
             r1 = new Role("admin");
