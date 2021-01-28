@@ -5,12 +5,13 @@ import entities.Role;
 import entities.User;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,8 +117,8 @@ public class CourseResourceTest {
                             .then()
                             .extract()
                             .response();
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertEquals("security", response.jsonPath().getString("courseName"));
+        assertEquals(200, response.statusCode());
+        assertEquals("security", response.jsonPath().getString("courseName"));
     }
 
     @Test
@@ -133,7 +134,7 @@ public class CourseResourceTest {
                 .then()
                 .extract()
                 .response();
-        Assertions.assertEquals(400, response.statusCode());
+        assertEquals(400, response.statusCode());
     }
 
     @Test
@@ -147,8 +148,8 @@ public class CourseResourceTest {
                 .then()
                 .extract()
                 .response();
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertEquals(2, response.jsonPath().getList("$").size());
+        assertEquals(200, response.statusCode());
+        assertEquals(2, response.jsonPath().getList("$").size());
 
     }
 }

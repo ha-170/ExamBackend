@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ClassResourceTest {
 
@@ -116,8 +117,8 @@ public class ClassResourceTest {
                 .then()
                 .extract()
                 .response();
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertEquals("semester 1", response.jsonPath().getString("semester"));
+        assertEquals(200, response.statusCode());
+        assertEquals("semester 1", response.jsonPath().getString("semester"));
     }
 
     @Test
@@ -133,7 +134,7 @@ public class ClassResourceTest {
                 .then()
                 .extract()
                 .response();
-        Assertions.assertEquals(400, response.statusCode());
+        assertEquals(400, response.statusCode());
     }
 
     @Test
@@ -147,7 +148,7 @@ public class ClassResourceTest {
                 .then()
                 .extract()
                 .response();
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertEquals(2, response.jsonPath().getList("$").size());
+        assertEquals(200, response.statusCode());
+        assertEquals(2, response.jsonPath().getList("$").size());
     }
 }
