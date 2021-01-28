@@ -1,32 +1,31 @@
 package rest;
 
+import entities.Class;
 import entities.Course;
 import entities.Role;
 import entities.User;
 import io.restassured.RestAssured;
-import static io.restassured.RestAssured.given;
 import io.restassured.parsing.Parser;
+import io.restassured.response.Response;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import io.restassured.response.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
-public class CourseResourceTest {
+import static io.restassured.RestAssured.given;
+
+public class ClassResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
     private static Course c1, c2;
+    private static Class cl1, cl2;
     private static User u1;
     private static Role r1;
 
@@ -41,7 +40,6 @@ public class CourseResourceTest {
 
     @BeforeAll
     public static void setUpClass() {
-        //This method must be called before you request the EntityManagerFactory
         EMF_Creator.startREST_TestWithDB();
         emf = EMF_Creator.createEntityManagerFactoryForTest();
 
@@ -54,12 +52,10 @@ public class CourseResourceTest {
 
     @AfterAll
     public static void closeTestServer() {
-
         //Don't forget this, if you called its counterpart in @BeforeAll
         EMF_Creator.endREST_TestWithDB();
         httpServer.shutdownNow();
     }
-
     // Setup the DataBase (used by the test-server and this test) in a known state BEFORE EACH TEST
     //TODO -- Make sure to change the EntityClass used below to use YOUR OWN (renamed) Entity class
     @BeforeEach
@@ -70,16 +66,21 @@ public class CourseResourceTest {
             //Delete existing users and roles to get a "fresh" database
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
+            em.createQuery("delete from Class").executeUpdate();
             em.createQuery("delete from Course").executeUpdate();
             u1 = new User("admin","test1");
             r1 = new Role("admin");
             u1.addRole(r1);
-            c1 = new Course("security", "beginners");
-            c2 = new Course("javascript", "advanced");
+            c1 = new Course("security","beginners");
+            c2 = new Course("javascript","advanced");
+            cl1 = new Class("semester 1", 30, c1);
+            cl2 = new Class("semester 2", 20, c2);
             em.persist(r1);
             em.persist(u1);
             em.persist(c1);
             em.persist(c2);
+            em.persist(cl1);
+            em.persist(cl2);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -103,32 +104,32 @@ public class CourseResourceTest {
     }
 
     @Test
-    public void testAddCourse(){
+    public void testAddClass(){
         performLogin("admin", "test1");
-        String body = String.format("{courseName: \"%s\", description: \"%s\"}", "security", "beginners");
-        Response response = given()
-                            .contentType("application/json")
-                            .header("x-access-token", securityToken)
-                            .body(body)
-                            .when()
-                            .post("/course/add")
-                            .then()
-                            .extract()
-                            .response();
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertEquals("security", response.jsonPath().getString("courseName"));
-    }
-
-    @Test
-    public void testAddCourseBadRequest(){
-        performLogin("admin", "test1");
-        String body = String.format("{courseName: \"%s\"}", "security");
+        String body = String.format("{semester: \"%s\", numberOfStudents: \"%d\", course: {id:\"%d\"}}", "semester 1", 20, 1);
         Response response = given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .body(body)
                 .when()
-                .post("/course/add")
+                .post("/class/add")
+                .then()
+                .extract()
+                .response();
+        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertEquals("semester 1", response.jsonPath().getString("semester"));
+    }
+
+    @Test
+    public void testAddCourseBadRequest(){
+        performLogin("admin", "test1");
+        String body = String.format("{semester: \"%s\", numberOfStudents: \"%d\", course: {}}", "semester 1", 20);
+        Response response = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(body)
+                .when()
+                .post("/class/add")
                 .then()
                 .extract()
                 .response();
@@ -136,18 +137,17 @@ public class CourseResourceTest {
     }
 
     @Test
-    public void testGetAllCourses(){
+    public void testGetAllClasses(){
         performLogin("admin", "test1");
         Response response = given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/course/all")
+                .get("/class/all")
                 .then()
                 .extract()
                 .response();
         Assertions.assertEquals(200, response.statusCode());
         Assertions.assertEquals(2, response.jsonPath().getList("$").size());
-
     }
 }

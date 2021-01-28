@@ -2,13 +2,11 @@ package entities;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "course")
-@XmlRootElement
 public class Course implements Serializable {
 
     @Id()
@@ -24,13 +22,27 @@ public class Course implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.PERSIST)
+    List<Class> classes;
+
+    public List<Class> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<Class> classes) {
+        this.classes = classes;
+    }
+
     public Course(String courseName, String description) {
         this.courseName = courseName;
         this.description = description;
     }
 
-    public Course() {
+    public Course(Long id) {
+        this.id = id;
+    }
 
+    public Course() {
     }
 
     public Long getId() {

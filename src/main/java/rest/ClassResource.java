@@ -2,9 +2,9 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dto.CourseDTO;
+import dto.ClassDTO;
 import errorhandling.API_Exception;
-import facades.CourseFacade;
+import facades.ClassFacade;
 import utils.EMF_Creator;
 
 import javax.annotation.security.RolesAllowed;
@@ -12,11 +12,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-@Path("course")
-public class CourseResource {
+@Path("class")
+public class ClassResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
-    private static final CourseFacade FACADE = CourseFacade.getCourseFacade(EMF);
+    private static final ClassFacade FACADE = ClassFacade.getClassFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @POST
@@ -24,23 +24,24 @@ public class CourseResource {
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String addCourse(String courseJson) throws API_Exception {
-        CourseDTO course = GSON.fromJson(courseJson, CourseDTO.class);
-        CourseDTO newCourse;
+    public String addClass(String classJson) throws API_Exception {
+        ClassDTO classDTO = GSON.fromJson(classJson, ClassDTO.class);
+        ClassDTO newClass;
         try {
-            newCourse = FACADE.addCourse(course);
+            newClass = FACADE.addClass(classDTO);
         } catch (API_Exception ex) {
             throw ex;
         }
-        return GSON.toJson(newCourse);
+        return GSON.toJson(newClass);
     }
 
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getCourses() {
-        CourseDTO[] courses = FACADE.getAllCourses();
-        return GSON.toJson(courses);
+    public String getAllClasses() {
+        ClassDTO[] classes = FACADE.getAllClasses();
+        return GSON.toJson(classes);
     }
 
 }
+

@@ -7,7 +7,6 @@ import errorhandling.API_Exception;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 public class CourseFacade {
@@ -16,7 +15,6 @@ public class CourseFacade {
     private static CourseFacade instance;
 
     private CourseFacade() {
-
     }
     /**
      *
