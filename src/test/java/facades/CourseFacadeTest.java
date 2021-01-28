@@ -33,6 +33,7 @@ public class CourseFacadeTest {
         try {
             em.getTransaction().begin();
             //Delete existing users and roles to get a "fresh" database
+            em.createQuery("delete from Class").executeUpdate();
             em.createQuery("delete from Course").executeUpdate();
             em.persist(c1);
             em.persist(c2);
@@ -48,6 +49,7 @@ public class CourseFacadeTest {
         try {
             em.getTransaction().begin();
             //Delete existing users and roles to get a "fresh" database
+            em.createQuery("delete from Class").executeUpdate();
             em.createQuery("delete from Course").executeUpdate();
             em.getTransaction().commit();
         } finally {
